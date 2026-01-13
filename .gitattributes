@@ -1,0 +1,19 @@
+# Git attributes to ensure consistent line endings across platforms
+# Detect text files and normalize them; force LF for common text files
+* text=auto
+*.md text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.vue text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binary files - keep as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
