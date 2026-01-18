@@ -1,125 +1,63 @@
 <template>
-  <div class="cart">
-    <h2>Carrito de compras</h2>
-    <p v-if="cartItems.length === 0">Tu carrito está vacío</p>
-    
-    <div v-else>
-      <div v-for="item in cartItems" :key="item.product.id" class="cart-item">
-        <img :src="item.product.image" :alt="item.product.name" class="cart-image" />
-        <div class="cart-info">
-          <h4>{{ item.product.name }}</h4>
-          <p>${{ item.product.price }} × {{ item.quantity }}</p>
-        </div>
-        <div class="cart-actions">
-          <button @click="decreaseQuantity(item)">-</button>
-          <span>{{ item.quantity }}</span>
-          <button @click="increaseQuantity(item)">+</button>
-          <button @click="removeItem(item)" class="remove-btn">×</button>
-        </div>
-      </div>
-      
-      <div class="cart-total">
-        <strong>Total: ${{ totalPrice }}</strong>
-      </div>
-    </div>
+  <div class="card">
+    <h3>{{ product.name }}</h3>
+    <p>Precio: ${{ product.price }}</p>
+    <button @click="addToCart">Agregar al carrito</button>
   </div>
 </template>
 
 <script lang="ts">
-import type { Product } from './ProductCard.vue';
-
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
 export default {
-  data() {
-    return {
-      cartItems: [] as CartItem[]
-    };
-  },
-  computed: {
-    totalPrice(): number {
-      return this.cartItems.reduce((total, item) => {
-        return total + (item.product.price * item.quantity);
-      }, 0);
+  props: {
+    product: {
+      type: Object,
+      required: true
     }
   },
   methods: {
-    addProduct(product: Product) {
-      const existingItem = this.cartItems.find(item => item.product.id === product.id);
-      if (existingItem) {
-        existingItem.quantity++;
-      } else {
-        this.cartItems.push({ product, quantity: 1 });
-      }
-    },
-    increaseQuantity(item: CartItem) {
-      item.quantity++;
-    },
-    decreaseQuantity(item: CartItem) {
-      if (item.quantity > 1) {
-        item.quantity--;
-      } else {
-        this.removeItem(item);
-      }
-    },
-    removeItem(item: CartItem) {
-      this.cartItems = this.cartItems.filter(i => i !== item);
+    addToCart() {
+      this.$emit('add-to-cart', this.product)
     }
   }
 }
 </script>
-
 <style scoped>
-.cart {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 40px;
-}
-.cart-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-}
-.cart-image {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 15px;
-}
-.cart-info {
-  flex: 1;
-}
-.cart-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.cart-actions button {
-  width: 30px;
-  height: 30px;
+.card {
   border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 15px;
+  margin: 10px;
+  border-radius: 5px;
+  width: 200px;
   background: white;
-  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.remove-btn {
-  background: #ff4757 !important;
+
+.card h3 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+}
+
+.card p {
+  margin: 8px 0;
+  color: #666;
+}
+
+.card button {
+  width: 100%;
+  background: #42b983;
   color: white;
-  border: none !important;
-  margin-left: 10px;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.95em;
 }
-.cart-total {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 2px solid #333;
-  text-align: right;
-  font-size: 1.2em;
+
+.card button:hover {
+  background: #3aa876;
+}
+
+.card button:active {
+  transform: scale(0.98);
 }
 </style>

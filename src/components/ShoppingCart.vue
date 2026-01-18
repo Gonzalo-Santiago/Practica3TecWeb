@@ -1,125 +1,119 @@
 <template>
-  <div class="cart">
-    <h2>Carrito de compras</h2>
-    <p v-if="cartItems.length === 0">Tu carrito está vacío</p>
+  <div class="shopping-cart">
+    <h2>🛒 Carrito de compras</h2>
+    
+    <div v-if="items.length === 0" class="empty">
+      El carrito está vacío
+    </div>
     
     <div v-else>
-      <div v-for="item in cartItems" :key="item.product.id" class="cart-item">
-        <img :src="item.product.image" :alt="item.product.name" class="cart-image" />
-        <div class="cart-info">
-          <h4>{{ item.product.name }}</h4>
-          <p>${{ item.product.price }} × {{ item.quantity }}</p>
+      <div v-for="item in items" :key="item.product.id" class="cart-item">
+        <div>
+          <strong>{{ item.product.name }}</strong> - ${{ item.product.price }}
+          <br>
+          <small>Cantidad: {{ item.quantity }}</small>
         </div>
-        <div class="cart-actions">
-          <button @click="decreaseQuantity(item)">-</button>
-          <span>{{ item.quantity }}</span>
-          <button @click="increaseQuantity(item)">+</button>
-          <button @click="removeItem(item)" class="remove-btn">×</button>
-        </div>
+        <button @click="removeItem(item)" class="remove-btn">×</button>
       </div>
       
-      <div class="cart-total">
-        <strong>Total: ${{ totalPrice }}</strong>
-      </div>
+      <hr>
+      <p class="total">Total: ${{ getTotal() }}</p>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import type { Product } from './ProductCard.vue';
-
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
 export default {
-  data() {
-    return {
-      cartItems: [] as CartItem[]
-    };
-  },
-  computed: {
-    totalPrice(): number {
-      return this.cartItems.reduce((total, item) => {
-        return total + (item.product.price * item.quantity);
-      }, 0);
+  props: {
+    items: {
+      type: Array as any,
+      required: true
     }
   },
   methods: {
-    addProduct(product: Product) {
-      const existingItem = this.cartItems.find(item => item.product.id === product.id);
-      if (existingItem) {
-        existingItem.quantity++;
-      } else {
-        this.cartItems.push({ product, quantity: 1 });
-      }
+    removeItem(item: any) {
+      this.$emit('remove-item', item)
     },
-    increaseQuantity(item: CartItem) {
-      item.quantity++;
-    },
-    decreaseQuantity(item: CartItem) {
-      if (item.quantity > 1) {
-        item.quantity--;
-      } else {
-        this.removeItem(item);
-      }
-    },
-    removeItem(item: CartItem) {
-      this.cartItems = this.cartItems.filter(i => i !== item);
+    getTotal() {
+      return (this.items as any[]).reduce((total: number, item: any) => {
+        return total + (item.product.price * item.quantity)
+      }, 0)
     }
   }
 }
 </script>
-
 <style scoped>
-.cart {
-  border: 1px solid #ddd;
-  border-radius: 8px;
+.shopping-cart {
+  border: 2px solid #42b983;
   padding: 20px;
-  margin-top: 40px;
+  margin: 20px 0;
+  border-radius: 5px;
+  background: #f0f8f5;
 }
+
+.shopping-cart h2 {
+  color: #42b983;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+  font-style: italic;
+}
+
 .cart-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
 }
-.cart-image {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 15px;
-}
-.cart-info {
+
+.cart-item div {
   flex: 1;
 }
-.cart-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+
+.cart-item strong {
+  color: #2c3e50;
 }
-.cart-actions button {
+
+.cart-item small {
+  color: #666;
+  display: block;
+  margin-top: 5px;
+}
+
+.remove-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
   width: 30px;
   height: 30px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: white;
+  border-radius: 50%;
   cursor: pointer;
-}
-.remove-btn {
-  background: #ff4757 !important;
-  color: white;
-  border: none !important;
+  font-size: 18px;
   margin-left: 10px;
+  transition: background 0.3s ease;
 }
-.cart-total {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 2px solid #333;
-  text-align: right;
+
+.remove-btn:hover {
+  background: #c0392b;
+}
+
+.total {
   font-size: 1.2em;
+  font-weight: bold;
+  color: #42b983;
+  text-align: right;
+  margin: 10px 0;
+}
+
+.shopping-cart hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
 }
 </style>
